@@ -54,8 +54,6 @@ MainWindow::MainWindow(QWidget *parent) :
     m_statusBar->addWidget(labelProgress);
     m_statusBar->addWidget(m_webloadProgress);
 
-    QAction *showProgressbar = new QAction;
-    m_statusBar->addAction();
 
 
     //m_statusBar->setFixedHeight(20);
@@ -64,6 +62,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(m_webView,SIGNAL(loadProgress(int)),m_webloadProgress,SLOT(setValue(int)));
 
+    this->setWindowState(Qt::WindowMaximized);
 }
 
 MainWindow::~MainWindow()
@@ -75,7 +74,7 @@ void MainWindow::redirect()
 {
     if(NULL != m_addr){
         QString strAddr = m_addr->text();
-        if(strAddr.startsWith("http://")) {
+        if(strAddr.startsWith("http://") || strAddr.startsWith("https://")) {
             QUrl url(strAddr);
             m_webView->load(url);
         }else{
