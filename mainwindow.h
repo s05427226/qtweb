@@ -26,6 +26,7 @@ private slots:
     void loadStart();
     void loadProgress(int iProgress);
     void loadFinished(bool bFinished);
+    void history();
 private:
     Ui::MainWindow *ui;
     QLineEdit *m_addr;

@@ -10,6 +10,11 @@
 #include <QProgressBar>
 #include <QLabel>
 #include <QAction>
+#include <QWebSettings>
+#include <QWebHistory>
+#include <QWebHistoryItem>
+#include <QList>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -23,19 +28,28 @@ MainWindow::MainWindow(QWidget *parent) :
     m_addr = new QLineEdit(QString("http://www.baidu.com"),widget);
 
     QPushButton *go = new QPushButton(QString("go"));
+    QPushButton *history = new QPushButton(QString("history"));
     QString str = m_addr->text();
 
     hlayout->addWidget(m_addr);
     hlayout->addWidget(go);
+    hlayout->addWidget(history);
     hlayout->stretch(0);
 
     connect(go,SIGNAL(clicked()),this,SLOT(redirect()));
+    connect(history,SIGNAL(clicked()),this,SLOT(history()));
     connect(m_addr,SIGNAL(returnPressed()),this,SLOT(redirect()));
 
     QVBoxLayout *mainlayout = new QVBoxLayout;
 
     m_webView = new QWebView;
-    m_webView->load(QUrl("http://www.baidu.com"));
+    QString string = "<html><body><h1>HTML Previewer</h1>"
+                     " <p>This example shows you how to use QWebView to"
+                     " preview HTML data written in a QPlainTextEdit.</p>"
+                     " </body></html>";
+    m_webView->setHtml(string);
+
+   // m_webView->load(QUrl("http://www.baidu.com"));
     mainlayout->addLayout(hlayout);
     mainlayout->addWidget(m_webView);
 
@@ -65,6 +79,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_webView,SIGNAL(loadFinished(bool)),this,SLOT(loadFinished(bool)));
 
     this->setWindowState(Qt::WindowMaximized);
+
+    QWebSettings *websettings = m_webView->settings();
+    websettings->setFontFamily(QWebSettings::StandardFont,"宋体");
 }
 
 MainWindow::~MainWindow()
@@ -103,11 +120,30 @@ void MainWindow::loadProgress(int iProgress)
     this->m_webloadProgress->show();
 }
 
-void MainWindow::loadFinished(bool bFinished)
+void MainWindow::loadFinished(bool bSuccessed)
 {
-    if(bFinished) {
+    if(bSuccessed) {
         this->m_labelProgress->setText(QString(tr("加载完成")));
         this->m_webloadProgress->hide();
+    }else {
+        this->m_labelProgress->setText(QString(tr("加载失败")));
+        this->m_webloadProgress->hide();
     }
+
+}
+
+
+void MainWindow::history()
+{
+    QWebHistory *history = m_webView->history();
+    QList<QWebHistoryItem> qql = history->items();
+    QList<QWebHistoryItem>::iterator it;
+    QString strHistory;
+    for(it = qql.begin();it != qql.end();it++) {
+        strHistory += it->title() + it->url().toString();
+        strHistory += "\n";
+    }
+
+    QMessageBox::information(this,"history",strHistory);
 
 }
