@@ -3,6 +3,11 @@
 
 #include <QMainWindow>
 
+class QLineEdit;
+class QWebView;
+class QStatusBar;
+class QProgressBar;
+
 namespace Ui {
 class MainWindow;
 }
@@ -15,8 +20,15 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+private slots:
+    void redirect();
 private:
     Ui::MainWindow *ui;
+    QLineEdit *m_addr;
+    QWebView *m_webView;
+
+    QStatusBar* m_statusBar;
+    QProgressBar* m_webloadProgress;
 };
 
 #endif // MAINWINDOW_H
