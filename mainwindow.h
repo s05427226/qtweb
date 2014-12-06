@@ -7,6 +7,7 @@ class QLineEdit;
 class QWebView;
 class QStatusBar;
 class QProgressBar;
+class QLabel;
 
 namespace Ui {
 class MainWindow;
@@ -22,6 +23,9 @@ public:
 
 private slots:
     void redirect();
+    void loadStart();
+    void loadProgress(int iProgress);
+    void loadFinished(bool bFinished);
 private:
     Ui::MainWindow *ui;
     QLineEdit *m_addr;
@@ -29,6 +33,7 @@ private:
 
     QStatusBar* m_statusBar;
     QProgressBar* m_webloadProgress;
+    QLabel *m_labelProgress;
 };
 
 #endif // MAINWINDOW_H

@@ -47,11 +47,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_statusBar = this->statusBar();
     m_webloadProgress = new QProgressBar;
-    QLabel *labelProgress = new QLabel("加载进度：");
+    m_labelProgress = new QLabel("");
 
     m_webloadProgress->setRange(0,100);
     m_webloadProgress->setValue(0);
-    m_statusBar->addWidget(labelProgress);
+    m_statusBar->addWidget(m_labelProgress);
     m_statusBar->addWidget(m_webloadProgress);
 
 
@@ -60,13 +60,16 @@ MainWindow::MainWindow(QWidget *parent) :
    // m_statusBar->setLayout(statusBar1Layout);
     m_statusBar->setStyleSheet(QString("QStatusBar::item{border: 0px}"));
 
-    connect(m_webView,SIGNAL(loadProgress(int)),m_webloadProgress,SLOT(setValue(int)));
+    connect(m_webView,SIGNAL(loadStarted()),this,SLOT(loadStart()));
+    connect(m_webView,SIGNAL(loadProgress(int)),this,SLOT(loadProgress(int)));
+    connect(m_webView,SIGNAL(loadFinished(bool)),this,SLOT(loadFinished(bool)));
 
     this->setWindowState(Qt::WindowMaximized);
 }
 
 MainWindow::~MainWindow()
 {
+    delete m_webView;
     delete ui;
 }
 
@@ -85,4 +88,26 @@ void MainWindow::redirect()
         QUrl url("http://www.baidu.cn");
         m_webView->load(url);
     }
+}
+
+void MainWindow::loadStart()
+{
+    this->m_labelProgress->setText(QString(tr("正在连接网站...")));
+    this->m_webloadProgress->hide();
+}
+
+void MainWindow::loadProgress(int iProgress)
+{
+    this->m_labelProgress->setText(QString(tr("加载进度：")));
+    this->m_webloadProgress->setValue(iProgress);
+    this->m_webloadProgress->show();
+}
+
+void MainWindow::loadFinished(bool bFinished)
+{
+    if(bFinished) {
+        this->m_labelProgress->setText(QString(tr("加载完成")));
+        this->m_webloadProgress->hide();
+    }
+
 }
